@@ -2,6 +2,8 @@ package com.youandwe.service;
 
 
 
+import java.time.LocalDateTime;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.youandwe.daos.AppUsersDAO;
@@ -24,26 +26,15 @@ public class AppUsersService {
 
     // Save a new user
     public AppUsersDAO saveNewUser(AppUsers user) {
+    	  user.setSignupTime(LocalDateTime.now());
         AppUsers savedUser = appUsersRepository.save(user);
+     
         return new AppUsersDAO(savedUser.getUserId(), savedUser.getName(), savedUser.getEmail(), savedUser.getUsername());
     }
     
     
 
-    // for login purpose
-    public Boolean login(String usernameOrEmail, String password) {
-        AppUsers loginData = appUsersRepository.findByEmail(usernameOrEmail);
-
-        if (loginData == null) {
-            loginData = appUsersRepository.findByUsername(usernameOrEmail);
-        }
-
-        if (loginData == null || !loginData.getPassword().equals(password)) {
-            return false;
-        }
-
-        return true;
-    }
+    
     
 
     // Delete user by ID

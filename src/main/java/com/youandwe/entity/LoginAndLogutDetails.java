@@ -7,6 +7,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -14,24 +16,30 @@ import lombok.Setter;
 @Getter
 @Setter
 
-public class AppUsers {
+@Table(uniqueConstraints = @UniqueConstraint (columnNames = {"username","email" }))
+public class LoginAndLogutDetails {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
-	private Integer userId;
-
-	@Column(nullable = false, length = 50)
-	private String name;
-
-	@Column(nullable = false, unique = true, length = 50)
+	private Integer user_id;
+	
+//	@Column(nullable = false, unique = true)
+//	private String usernameOrEmail;
+	
+	
 	private String username;
-
-	@Column(nullable = false, unique = true, length = 50)
+	
+	
 	private String email;
-
-	@Column(nullable = false, length = 50)
+	
+	
 	private String password;
 	
+
 	@Column(nullable = false)
-	private LocalDateTime signupTime;
+	private LocalDateTime loginTime;
+	
+
+	
+   
 }
