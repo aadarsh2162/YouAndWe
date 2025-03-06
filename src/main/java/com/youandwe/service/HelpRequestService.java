@@ -16,16 +16,25 @@ import youandme.exceptions.RequestNotFound;
 
 @Service
 public class HelpRequestService {
-
+@Autowired
+AppUsersRepository appUsersRepository;
 
 	@Autowired
 	private HelpRequestaRepository helpRequestaRepository;
+	
+	@Autowired
+	private AuthenticationService authenticationService;
 
 	
-
 	public HelpRequest saveRequest(HelpRequest request) {
-		request.setRequestPostedOn(LocalDateTime.now());
-		return helpRequestaRepository.save(request);
+	    String username = authenticationService.getCurrentUsername();
+	    
+	    AppUsers appUser = appUsersRepository.findByUsernameOrEmail(username, username)
+	            .orElseThrow(() -> new RuntimeException("User not found"));
+	    request.setRequestPostedOn(LocalDateTime.now());
+	    request.setAppUsers(appUser);
+
+	    return helpRequestaRepository.save(request);
 	}
 
 	
