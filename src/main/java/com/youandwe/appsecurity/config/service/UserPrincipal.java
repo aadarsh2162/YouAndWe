@@ -10,12 +10,12 @@ import java.util.Collection;
 import java.util.Collections;
 
 
+
 public class UserPrincipal implements UserDetails {
 
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = -5991500592970314747L;
 	private AppUsers user;
 
     public UserPrincipal(AppUsers user) {
@@ -24,7 +24,7 @@ public class UserPrincipal implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return Collections.singleton(new SimpleGrantedAuthority("USER"));
+        return Collections.singleton(new SimpleGrantedAuthority("ROLE_USER"));
     }
 
     @Override
@@ -55,5 +55,10 @@ public class UserPrincipal implements UserDetails {
     @Override
     public boolean isEnabled() {
         return true;
+    }
+    
+    
+    public String getEmail() {
+    	return user.getEmail();
     }
 }

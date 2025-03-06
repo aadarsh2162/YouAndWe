@@ -11,7 +11,6 @@ import com.youandwe.service.AppUsersService;
 
 @RestController
 @RequestMapping("/user")
-@CrossOrigin(origins = "http://localhost:3001")
 public class AppUsersController {
 
 	@Autowired

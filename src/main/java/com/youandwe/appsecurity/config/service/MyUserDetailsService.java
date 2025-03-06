@@ -3,7 +3,6 @@ package com.youandwe.appsecurity.config.service;
 import com.youandwe.entity.AppUsers;
 import com.youandwe.repository.AppUsersRepository;
 
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -22,11 +21,11 @@ public class MyUserDetailsService implements UserDetailsService {
     
     @Override
     public UserDetails loadUserByUsername(String usernameOrEmail) throws UsernameNotFoundException {
-        AppUsers user = userRepository.findByUsername(usernameOrEmail)
-            .orElseGet(() -> userRepository.findByEmail(usernameOrEmail)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found with username or email: " + usernameOrEmail)));
+        AppUsers user = userRepository.findByUsernameOrEmail(usernameOrEmail , usernameOrEmail)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found with username or email: " + usernameOrEmail));
+        System.out.println(usernameOrEmail + "in user details service debug");
 
-        return new UserPrincipal(user); // Assuming UserPrincipal implements UserDetails
+        return new UserPrincipal(user); 
     }
 
 }
