@@ -15,7 +15,8 @@ public interface AppUsersRepository extends CrudRepository<AppUsers, Integer> {
 	 Optional<AppUsers> findByUsername(String username);
 	    
 	    Optional<AppUsers> findByUsernameOrEmail(String username, String email);
-	    
+	    Boolean existsByEmail(String email);
+	    Boolean existsByUsername(String username);
 	    
 
 }

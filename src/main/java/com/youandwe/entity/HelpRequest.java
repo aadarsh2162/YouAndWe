@@ -26,11 +26,14 @@ public class HelpRequest {
 	
 	@Column(nullable = false) 
 	private String email;
-	
+
+    @Column(nullable = false)
+    private String name;
+
 	@Column(nullable = false) 
-	private String helpType;
+	private String help;
 	
-	private String additionalDetail ;
+	private String details ;
 	
 	private LocalDateTime requestPostedOn;
 	

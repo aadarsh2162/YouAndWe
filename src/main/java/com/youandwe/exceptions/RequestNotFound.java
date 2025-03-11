@@ -1,4 +1,4 @@
-package youandme.exceptions;
+package com.youandwe.exceptions;
 
 public class RequestNotFound  extends RuntimeException{
 
