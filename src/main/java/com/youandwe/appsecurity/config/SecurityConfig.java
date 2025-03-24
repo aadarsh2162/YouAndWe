@@ -47,7 +47,7 @@ public class SecurityConfig {
         return http
             .csrf(csrf -> csrf.disable())  // Disable CSRF for stateless authentication
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/api/auth/signup", "/api/auth/login").permitAll()
+                .requestMatchers("/api/auth/signup", "/api/auth/login" , "/api/auth/email-verify/**" ).permitAll()
                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                 .anyRequest().authenticated()
             )
@@ -103,11 +103,7 @@ public class SecurityConfig {
     
     
 
-    /**
-     * Configures the authentication manager.
-     *
-     * @return The configured {@link AuthenticationManager}.
-     */
+ 
     @Bean
     public AuthenticationManager authenticationManager() {
         System.out.println("SecurityConfig: Creating authentication manager...");
@@ -122,11 +118,7 @@ public class SecurityConfig {
     
     
 
-    /**
-     * Configures CORS settings to allow cross-origin requests from any origin.
-     *
-     * @return The configured {@link WebMvcConfigurer}.
-     */
+  
     @Bean
     public WebMvcConfigurer corsConfigurer() {
         System.out.println("SecurityConfig: Configuring CORS settings...");

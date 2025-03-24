@@ -33,6 +33,9 @@ public class AppUsers {
 
 	@Column(nullable = false, unique = true)
 	private String username;
+	
+	@Column(nullable = false, unique = true)
+	private String  mobileNo;
 
 	@Column(nullable = false, unique = true)
 	private String email;
@@ -42,6 +45,13 @@ public class AppUsers {
 	
 	@Column(nullable = false)
 	private LocalDateTime signupTime;
+	
+//	@Column(nullable = true)
+//	private LocalDateTime loginTime;
+	
+//	@Column(nullable = false)
+//	private Boolean IsVerified;
+	
 	
 	@OneToMany(mappedBy = "appUsers", cascade = CascadeType.ALL)
    private 	List<HelpRequest> helpRequest;

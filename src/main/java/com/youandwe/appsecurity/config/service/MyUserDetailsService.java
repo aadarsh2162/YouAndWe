@@ -19,7 +19,7 @@ import org.slf4j.LoggerFactory;
 @Service
 public class MyUserDetailsService implements UserDetailsService {
 
-    private static final Logger logger = LoggerFactory.getLogger(MyUserDetailsService.class);
+   
     private final AppUsersRepository userRepository;
 
     
@@ -30,13 +30,13 @@ public class MyUserDetailsService implements UserDetailsService {
 
    
     @Override
-    public UserDetails loadUserByUsername(String usernameOrEmail) throws UsernameNotFoundException {
-        logger.debug("User authentication request for: {}", usernameOrEmail);
+    public UserDetails loadUserByUsername(String usernameOrEmailOrMobileNo) throws UsernameNotFoundException {
+        System.out.println("User authentication request for: {}" +  usernameOrEmailOrMobileNo);
 
-        AppUsers user = userRepository.findByUsernameOrEmail(usernameOrEmail, usernameOrEmail)
-            .orElseThrow(() -> {
-                logger.error("User not found with username or email: {}", usernameOrEmail);
-                return new UsernameNotFoundException("User not found with username or email: " + usernameOrEmail);
+        AppUsers user = userRepository.findByUsernameOrEmailOrMobileNo(usernameOrEmailOrMobileNo, usernameOrEmailOrMobileNo , usernameOrEmailOrMobileNo)
+           .orElseThrow(() -> {
+            	 System.out.println("User not found with username or email: {}"+ usernameOrEmailOrMobileNo);
+                return new UsernameNotFoundException("User not found with username or email: " + usernameOrEmailOrMobileNo);
             });
         
       

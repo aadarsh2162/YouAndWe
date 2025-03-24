@@ -48,7 +48,7 @@ public class HelpRequestController {
 	 * @param id The ID of the help request to be deleted.
 	 * @return ResponseEntity containing a success message.
 	 */
-	@PreAuthorize("hasRole('ADMIN')")
+	@PreAuthorize("hasAnyRole('ADMIN', 'USER')")
 	@DeleteMapping("/{id}")
 	public ResponseEntity<String> deleteRequestById(@PathVariable Integer id) {
 		return ResponseEntity.accepted().body(helpRequestService.deleteById(id));
@@ -83,7 +83,7 @@ public class HelpRequestController {
 	 * @param helpRequestId  The ID of the help request to be updated.
 	 * @return ResponseEntity containing the updated help request.
 	 */
-	@PreAuthorize("hasRole('ADMIN')")
+	@PreAuthorize("hasAnyRole('ADMIN', 'USER')")
 	@PutMapping("/{id}")
 	public ResponseEntity<HelpRequest> updateTodo(@RequestBody HelpRequest helpRequestDto,
 			@PathVariable("id") Long helpRequestId) {
