@@ -24,11 +24,12 @@ public class HelpRequest {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer id;
 	
-	@Column(nullable = false) 
-	private String email;
+//	
+//	 @Column(nullable = true)
+//	private String email;
 
     @Column(nullable = false)
-    private String name;
+    private String username;
 
 	@Column(nullable = false) 
 	private String help;

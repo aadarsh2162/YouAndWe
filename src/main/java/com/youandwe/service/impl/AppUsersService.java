@@ -15,6 +15,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 
+import com.youandwe.appsecurity.config.EmailValidator;
 import com.youandwe.appsecurity.config.service.JWTService;
 import com.youandwe.appsecurity.config.service.UserPrincipal;
 import com.youandwe.daos.JwtAuthResponse;
@@ -42,23 +43,20 @@ public class AppUsersService implements UserAuth {
     @Autowired
     private AppUsersRepository repo;
 
-  
+  @Autowired
+  private EmailValidator emailValidator;
 
     @Autowired
     private RoleRepository roleRepository;
 
     private final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(12);
 
-    /**
-     * Registers a new user in the system.
-     *
-     * @param user The user details to register.
-     * @return The saved user entity.
-     * @throws HelpRequestAPIException if the username or email already exists.
-     */
+  
     @Override
     public AppUsers register(AppUsers user) {
-        // Check if username already exists
+    	
+    	
+    	
         if (repo.existsByUsername(user.getUsername())) {
             throw new HelpRequestAPIException(HttpStatus.BAD_REQUEST, "Username is already taken!");
         }
@@ -67,15 +65,18 @@ public class AppUsersService implements UserAuth {
         if (repo.existsByEmail(user.getEmail())) {
             throw new HelpRequestAPIException(HttpStatus.BAD_REQUEST, "Email is already registered!");
         }
+        // validate mail
+        emailValidator.sendVerificationEmail(user.getEmail());
 
         // Create a new user instance
         AppUsers newUser = new AppUsers();
         newUser.setName(user.getName());
         newUser.setUsername(user.getUsername());
         newUser.setEmail(user.getEmail());
-        newUser.setPassword(encoder.encode(user.getPassword())); // Encrypt password
+        newUser.setPassword(encoder.encode(user.getPassword()));// Encrypt password
+        newUser.setMobileNo(user.getMobileNo());
         newUser.setSignupTime(LocalDateTime.now());
-
+        
         // Assign the default "USER" role
         Set<Role> roles = new HashSet<>();
         Role userRole = roleRepository.findByName("ROLE_USER");
@@ -86,23 +87,19 @@ public class AppUsersService implements UserAuth {
 
         roles.add(userRole);
         newUser.setRoles(roles);
+        
+      
 
         return repo.save(newUser);
     }
 
-    /**
-     * Verifies user login credentials and generates a JWT token upon successful authentication.
-     *
-     * @param loginRequestDAO Contains username or email and password for login.
-     * @return A JWT authentication response containing the token and user roles.
-     * @throws HelpRequestAPIException if authentication fails.
-     */
+   
     @Override
     public JwtAuthResponse verify(LoginRequestDAO loginRequestDAO) {
         // Authenticate user with username/email and password
         Authentication authentication = authManager.authenticate(
             new UsernamePasswordAuthenticationToken(
-                loginRequestDAO.getUsernameOrEmail(),
+                loginRequestDAO.getUsernameOrEmailorMobileNo(),
                 loginRequestDAO.getPassword()
             )
         );
@@ -112,6 +109,7 @@ public class AppUsersService implements UserAuth {
 
         // Get authenticated user details
         UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
+       
 
         // Generate JWT token
         String token = jwtService.generateToken(userPrincipal);
@@ -120,15 +118,12 @@ public class AppUsersService implements UserAuth {
         Set<String> roles = userPrincipal.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.toSet());
-
+        
+      
         return new JwtAuthResponse(token, "Bearer", roles);
     }
 
-    /**
-     * Counts the total number of registered users in the system.
-     *
-     * @return The total number of users.
-     */
+    
     @Override
     public Long countUser() {
         return repo.count();

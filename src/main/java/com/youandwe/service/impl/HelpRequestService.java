@@ -31,18 +31,11 @@ public class HelpRequestService implements HelpRequestInter {
     @Autowired
     private AuthenticationService authenticationService;
 
-    /**
-     * Saves a new HelpRequest associated with the currently authenticated user.
-     *
-     * @param request The HelpRequest object containing request details.
-     * @return The saved HelpRequest object.
-     * @throws RuntimeException if the authenticated user is not found.
-     */
     @Override
     public HelpRequest saveRequest(HelpRequest request) {
         String username = authenticationService.getCurrentUsername();
 
-        AppUsers appUser = appUsersRepository.findByUsernameOrEmail(username, username)
+        AppUsers appUser = appUsersRepository.findByUsernameOrEmailOrMobileNo(username, username , username)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
         request.setRequestPostedOn(LocalDateTime.now());
@@ -51,24 +44,14 @@ public class HelpRequestService implements HelpRequestInter {
         return helpRequestaRepository.save(request);
     }
 
-    /**
-     * Retrieves all HelpRequest records from the database.
-     *
-     * @return An iterable list of all HelpRequest objects.
-     */
+   
     @Override
     public Iterable<HelpRequest> getAllRequest() {
         System.out.println("getAll Request");
         return helpRequestaRepository.findAll();
     }
 
-    /**
-     * Deletes a HelpRequest by its ID.
-     *
-     * @param id The ID of the HelpRequest to delete.
-     * @return A success message if the request is deleted.
-     * @throws RequestNotFound if the request with the given ID does not exist.
-     */
+  
     @Override
     public String deleteById(Integer id) {
         helpRequestaRepository.deleteById(id);
@@ -79,14 +62,7 @@ public class HelpRequestService implements HelpRequestInter {
         }
     }
 
-    /**
-     * Updates an existing HelpRequest identified by its ID.
-     *
-     * @param helpRequestDto The HelpRequest object containing updated details.
-     * @param helpRequestId  The ID of the HelpRequest to update.
-     * @return The updated HelpRequest object.
-     * @throws HelpRequestAPIException if the request with the given ID does not exist.
-     */
+  
     @Override
     public HelpRequest updateHelpRequest(HelpRequest helpRequestDto, Long helpRequestId) {
         Optional<HelpRequest> helpRequest = helpRequestaRepository.findById(helpRequestId);
@@ -94,8 +70,8 @@ public class HelpRequestService implements HelpRequestInter {
         if (helpRequest.isPresent()) {
             HelpRequest request = helpRequest.get();
 
-            request.setEmail(helpRequestDto.getEmail());
-            request.setName(helpRequestDto.getName());
+//            request.setEmail(helpRequestDto.getEmail());
+            request.setUsername(helpRequestDto.getUsername());
             request.setHelp(helpRequestDto.getHelp());
             request.setDetails(helpRequestDto.getDetails());
             request.setRequestPostedOn(LocalDateTime.now());

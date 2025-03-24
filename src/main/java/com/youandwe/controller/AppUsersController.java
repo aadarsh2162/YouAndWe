@@ -20,40 +20,32 @@ public class AppUsersController {
     @Autowired
     private UserAuth userAuth;
     
-    /**
-     * Handles user registration.
-     * 
-     * @param user The user details provided in the request body.
-     * @return ResponseEntity containing the registered user details.
-     */
+  
     @PostMapping("/signup")
     public ResponseEntity<AppUserDAO> register(@RequestBody AppUsers user) {
         AppUsers newUser = userAuth.register(user);
-        return ResponseEntity
-                .ok(new AppUserDAO(user.getUserId(), newUser.getName(), newUser.getUsername(), newUser.getEmail()));
+        return ResponseEntity.ok(new AppUserDAO(newUser.getUserId(), newUser.getName()
+        		,newUser.getUsername() ,newUser.getEmail(),newUser.getMobileNo() ));
     }
 
-    /**
-     * Handles user login and returns a JWT token if authentication is successful.
-     * 
-     * @param loginRequest The login credentials provided in the request body.
-     * @return ResponseEntity containing the authentication token.
-     */
+   
     @PostMapping("/login")
     public ResponseEntity<JwtAuthResponse> login(@RequestBody LoginRequestDAO loginRequest) {
         JwtAuthResponse token = userAuth.verify(loginRequest);
+        
         return ResponseEntity.ok().body(token);
     }
     
-    /**
-     * Endpoint for testing purposes to count the total number of users.
-     * 
-     * @return ResponseEntity containing the count of users.
-     */
+   
     @GetMapping("/count")
     public ResponseEntity<Long> getUser() {
         ResponseEntity<Long> entity = ResponseEntity.ok().body(userAuth.countUser());
         System.out.println(entity + " count value"); // Debugging statement
         return entity;
+    }
+    
+    @GetMapping("/email-verify/{email}")
+    public ResponseEntity<String> verifyMail(@PathVariable String email){
+    	return ResponseEntity.ok("thank you  for verification now you can login" + email);
     }
 }
