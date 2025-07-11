@@ -1,0 +1,24 @@
+package com.youandwe.dto;
+
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
+
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+@ToString
+public class SupportOfferRequest {
+    private Long requestId;
+    private Long supporterId;
+    private String supporterName;
+    private String supporterEmail;
+    private String supporterPhone;
+    private String message;
+    private String supportType;
+    private String availability;
+    private String contactMethod;
+} 

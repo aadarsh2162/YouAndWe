@@ -1,0 +1,45 @@
+package com.youandwe.controller;
+
+import com.youandwe.dto.HelpRequestCreateRequest;
+import com.youandwe.dto.HelpRequestResponse;
+import com.youandwe.service.HelpRequestService;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+@RestController
+@RequestMapping("/api/requests")
+@RequiredArgsConstructor
+public class HelpRequestController {
+
+    private final HelpRequestService helpRequestService;
+
+    @PostMapping
+    public ResponseEntity<HelpRequestResponse> createHelpRequest(
+            @Valid @RequestBody HelpRequestCreateRequest request,
+            @AuthenticationPrincipal UserDetails userDetails) {
+        HelpRequestResponse response = helpRequestService.createHelpRequest(request, userDetails.getUsername());
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping
+    public ResponseEntity<List<HelpRequestResponse>> getAllHelpRequests() {
+        return ResponseEntity.ok(helpRequestService.getAllHelpRequests());
+    }
+
+    @GetMapping("/my")
+    public ResponseEntity<List<HelpRequestResponse>> getMyHelpRequests(@AuthenticationPrincipal UserDetails userDetails) {
+        return ResponseEntity.ok(helpRequestService.getHelpRequestsByUser(userDetails.getUsername()));
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<HelpRequestResponse> getHelpRequestById(@PathVariable Long id) {
+        HelpRequestResponse response = helpRequestService.getHelpRequestById(id);
+        return ResponseEntity.ok(response);
+    }
+} 

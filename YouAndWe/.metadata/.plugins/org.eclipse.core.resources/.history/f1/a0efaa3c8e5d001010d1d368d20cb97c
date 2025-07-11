@@ -1,0 +1,70 @@
+package com.youandwe.service;
+
+import com.youandwe.dto.*;
+import com.youandwe.entity.Role;
+import com.youandwe.entity.User;
+import com.youandwe.exception.CustomException;
+import com.youandwe.repository.RoleRepository;
+import com.youandwe.repository.UserRepository;
+import com.youandwe.security.JwtUtil;
+import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+
+import java.util.Collections;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+@Service
+@RequiredArgsConstructor
+public class UserServiceImpl implements UserService {
+
+    private final UserRepository userRepository;
+    private final RoleRepository roleRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final JwtUtil jwtUtil;
+
+    @Override
+    public UserResponse registerUser(UserRegistrationRequest request) {
+        if (userRepository.existsByUsername(request.getUsername())) {
+            throw new CustomException("Username is already taken");
+        }
+        if (userRepository.existsByEmail(request.getEmail())) {
+            throw new CustomException("Email is already registered");
+        }
+        Role userRole = roleRepository.findByName("ROLE_USER")
+                .orElseThrow(() -> new CustomException("Default role not found"));
+
+        User user = User.builder()
+                .name(request.getName())
+                .username(request.getUsername())
+                .email(request.getEmail())
+                .mobileNo(request.getMobileNo())
+                .password(passwordEncoder.encode(request.getPassword()))
+                .roles(Collections.singleton(userRole))
+                .build();
+
+        User saved = userRepository.save(user);
+        return new UserResponse(saved.getId(), saved.getName(), saved.getUsername(), saved.getEmail());
+    }
+
+    @Override
+    public JwtAuthResponse login(UserLoginRequest request) {
+        User user = userRepository.findByUsername(request.getUsernameOrEmailOrMobileNo())
+                .or(() -> userRepository.findByEmail(request.getUsernameOrEmailOrMobileNo()))
+                .or(() -> userRepository.findByMobileNo(request.getUsernameOrEmailOrMobileNo()))
+                .orElseThrow(() -> new CustomException("Invalid credentials"));
+
+        if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
+            throw new CustomException("Invalid credentials");
+        }
+
+        Set<String> roles = user.getRoles().stream()
+                .map(Role::getName)
+                .collect(Collectors.toSet());
+
+        String token = jwtUtil.generateToken(user.getUsername(), roles);
+
+        return new JwtAuthResponse(token, "Bearer", roles);
+    }
+} 

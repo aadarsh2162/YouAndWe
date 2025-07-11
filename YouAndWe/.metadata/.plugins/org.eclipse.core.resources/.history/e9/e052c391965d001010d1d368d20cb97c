@@ -1,0 +1,79 @@
+package com.youandwe.service;
+
+import com.youandwe.dto.HelpRequestCreateRequest;
+import com.youandwe.dto.HelpRequestResponse;
+import com.youandwe.entity.HelpRequest;
+import com.youandwe.entity.User;
+import com.youandwe.exception.CustomException;
+import com.youandwe.repository.HelpRequestRepository;
+import com.youandwe.repository.UserRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
+
+@Service
+@RequiredArgsConstructor
+public class HelpRequestServiceImpl implements HelpRequestService {
+
+    private final HelpRequestRepository helpRequestRepository;
+    private final UserRepository userRepository;
+
+    @Override
+    public HelpRequestResponse createHelpRequest(HelpRequestCreateRequest request, String username) {
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new CustomException("User not found"));
+
+        HelpRequest helpRequest = HelpRequest.builder()
+                .title(request.getTitle())
+                .description(request.getDescription())
+                .category(request.getCategory())
+                .status("OPEN")
+                .user(user)
+                .createdAt(LocalDateTime.now())
+                .updatedAt(LocalDateTime.now())
+                .build();
+
+        HelpRequest saved = helpRequestRepository.save(helpRequest);
+        return mapToResponse(saved);
+    }
+
+    @Override
+    public List<HelpRequestResponse> getAllHelpRequests() {
+        return helpRequestRepository.findAll().stream()
+                .map(this::mapToResponse)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<HelpRequestResponse> getHelpRequestsByUser(String username) {
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new CustomException("User not found"));
+        return helpRequestRepository.findByUserId(user.getId()).stream()
+                .map(this::mapToResponse)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public HelpRequestResponse getHelpRequestById(Long id) {
+        HelpRequest helpRequest = helpRequestRepository.findById(id)
+            .orElseThrow(() -> new CustomException("Help request not found"));
+        return mapToResponse(helpRequest);
+    }
+
+    private HelpRequestResponse mapToResponse(HelpRequest helpRequest) {
+        return HelpRequestResponse.builder()
+                .id(helpRequest.getId())
+                .title(helpRequest.getTitle())
+                .description(helpRequest.getDescription())
+                .category(helpRequest.getCategory())
+                .status(helpRequest.getStatus())
+                .userId(helpRequest.getUser().getId())
+                .username(helpRequest.getUser().getUsername())
+                .createdAt(helpRequest.getCreatedAt())
+                .updatedAt(helpRequest.getUpdatedAt())
+                .build();
+    }
+} 
